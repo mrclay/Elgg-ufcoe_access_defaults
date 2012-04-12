@@ -1,12 +1,14 @@
 <?php
 
-elgg_register_event_handler('init', 'system', 'ufcoe_access_defaults_init');
+namespace UFCOE_Access_Defaults;
 
-function ufcoe_access_defaults_init() {
-    elgg_register_plugin_hook_handler('ufcoe:default_access', 'after', '_ufcoe_access_defaults_handler');
+elgg_register_event_handler('init', 'system', __NAMESPACE__ . '\\init');
+
+function init() {
+    elgg_register_plugin_hook_handler('ufcoe:default_access', 'after', __NAMESPACE__ . '\\input_access_handler');
 
     // add default case
-    elgg_register_plugin_hook_handler('ufcoe:alter_access', 'before', '_ufcoe_access_defaults_default_case');
+    elgg_register_plugin_hook_handler('ufcoe:alter_access', 'before', __NAMESPACE__ . '\\alter_access_handler');
 }
 
 /**
@@ -18,12 +20,12 @@ function ufcoe_access_defaults_init() {
  * @param array $params
  * @return int
  */
-function _ufcoe_access_defaults_handler($hook, $type, $returnvalue, $params) {
+function input_access_handler($hook, $type, $returnvalue, $params) {
     require_once __DIR__ . '/lib/UFCOE/AccessLevelContext.php';
     require_once __DIR__ . '/lib/UFCOE/AccessCaseInterface.php';
 
     // context data to be considered for deciding the access level
-    $ctx = new UFCOE\AccessLevelContext($returnvalue, $params);
+    $ctx = new \UFCOE\AccessLevelContext($returnvalue, $params);
 
     // allow plugins to add their own AccessCases to be considered
     $params['context'] = $ctx;
@@ -32,7 +34,7 @@ function _ufcoe_access_defaults_handler($hook, $type, $returnvalue, $params) {
     // check the list of cases, each may change the access level and choose to make their
     // decision final
     foreach ($cases as $case) {
-        /* @var UFCOE\AccessCaseInterface $case */
+        /* @var \UFCOE\AccessCaseInterface $case */
         $returnvalue = $case->alterAccessLevel($returnvalue, $ctx);
         if ($case->isFinal()) {
             break;
@@ -51,9 +53,9 @@ function _ufcoe_access_defaults_handler($hook, $type, $returnvalue, $params) {
  * @param array $params
  * @return array
  */
-function _ufcoe_access_defaults_default_case($hook, $type, $returnvalue, $params) {
+function alter_access_handler($hook, $type, $returnvalue, $params) {
     require_once __DIR__ . '/lib/UFCOE/AccessCase/Default.php';
 
-    $returnvalue[] = new UFCOE\AccessCase_Default();
+    $returnvalue[] = new \UFCOE\AccessCase_Default();
     return $returnvalue;
 }
