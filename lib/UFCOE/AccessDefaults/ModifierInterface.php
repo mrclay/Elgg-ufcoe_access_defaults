@@ -13,6 +13,15 @@ interface ModifierInterface {
     public function modifyAccessLevel($level, LevelContext $ctx);
 
     /**
+     * If the context suggests different options, change them
+     *
+     * @param array $options
+     * @param LevelContext $ctx
+     * @return array
+     */
+    public function modifyOptions(array $options, LevelContext $ctx);
+
+    /**
      * Use the access level given by this case; do not try other cases
      * @return bool
      */

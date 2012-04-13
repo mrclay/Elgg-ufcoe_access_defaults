@@ -10,9 +10,6 @@
  * @uses $vars['entity'] Optional. The entity for this access control (uses write_access_id)
  */
 
-$options = get_write_access_array();
-unset($options[ACCESS_PUBLIC]);
-
 $default_level = get_default_access();
 $params = array(
     'input_vars' => $vars,
@@ -20,6 +17,10 @@ $params = array(
 );
 $plugid = UFCOE\AccessDefaults\shortname();
 $default_level = elgg_trigger_plugin_hook("$plugid:set_default", 'after', $params, $default_level);
+
+// this MUST come after the above hook is triggered
+$options = get_write_access_array();
+unset($options[ACCESS_PUBLIC]);
 
 $defaults = array(
 	'class' => 'elgg-input-access',

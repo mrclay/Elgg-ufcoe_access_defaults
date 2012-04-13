@@ -18,6 +18,9 @@ function init() {
     // add default case
     elgg_register_plugin_hook_handler(shortname() . ':alter', 'before',
         __NAMESPACE__ . '\\alter_access_handler');
+
+    elgg_register_plugin_hook_handler('access:collections:write', 'all',
+        __NAMESPACE__ . '\\alter_options_handler');
 }
 
 /**
@@ -43,7 +46,7 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
 
     // allow plugins to add their own AccessCases to be considered
     $params['context'] = $ctx;
-    $modifiers = elgg_trigger_plugin_hook(shortname() . ':alter', 'before', $params, array());
+    $modifiers = get_modifiers($params);
 
     // check the list of cases, each may change the access level and choose to make their
     // decision final
@@ -55,7 +58,23 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
         }
     }
 
+    // store this for use in the access:collections:write hook
+    set_pop_ctx($ctx);
+
     return $returnvalue;
+}
+
+/**
+ * Build/get the list of modifier objects use to alter levels/options
+ * @param array $params ignored after the first invocation
+ * @return array
+ */
+function get_modifiers(array $params) {
+    static $modifiers = null;
+    if ($modifiers === null) {
+        $modifiers = elgg_trigger_plugin_hook(shortname() . ':alter', 'before', $params, array());
+    }
+    return $modifiers;
 }
 
 /**
@@ -70,4 +89,42 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
 function alter_access_handler($hook, $type, $returnvalue, $params) {
     $returnvalue[] = new Modifier_Default();
     return $returnvalue;
+}
+
+/**
+ * @param string $hook
+ * @param string $type
+ * @param array $returnvalue
+ * @param array $params
+ * @return array
+ */
+function alter_options_handler($hook, $type, $returnvalue, $params) {
+    $ctx = set_pop_ctx();
+    if ($ctx) {
+        $modifiers = get_modifiers($params);
+        foreach ($modifiers as $modifier) {
+            /* @var ModifierInterface $modifier */
+            $returnvalue = $modifier->modifyOptions($returnvalue, $ctx);
+            if ($modifier->isFinal()) {
+                break;
+            }
+        }
+    }
+    return $returnvalue;
+}
+
+/**
+ * Set or pop a level context
+ * @param null|LevelContext $ctx set to set, null to pop
+ * @return null|LevelContext
+ */
+function set_pop_ctx(LevelContext $ctx = null) {
+    static $cache = null;
+    if ($ctx) {
+        $cache = $ctx;
+    } else {
+        $ret = $cache;
+        $cache = null;
+        return $ret;
+    }
 }
