@@ -1,19 +1,19 @@
 <?php
 
-namespace UFCOE;
+namespace UFCOE\AccessDefaults;
 
 /**
  * Implements default access levels specified here:
  * http://community.education.ufl.edu/community/pg/pages/view/32409/
  */
-class AccessCase_Default implements AccessCaseInterface
+class Case_Default implements CaseInterface
 {
     public function isFinal()
     {
         return false;
     }
 
-    public function alterAccessLevel($level, AccessLevelContext $ctx)
+    public function alterAccessLevel($level, LevelContext $ctx)
     {
 
         if ($ctx->inGroup) {

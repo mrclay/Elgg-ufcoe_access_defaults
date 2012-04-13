@@ -1,11 +1,11 @@
 <?php
 
-namespace UFCOE;
+namespace UFCOE\AccessDefaults;
 
 /**
  * Encapsulates data you might need to make a decision on access level for a new object
  */
-class AccessLevelContext
+class LevelContext
 {
     /**
      * @var bool

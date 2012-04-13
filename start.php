@@ -1,10 +1,18 @@
 <?php
 
-namespace UFCOE_Access_Defaults;
+namespace UFCOE\AccessDefaults;
 
 elgg_register_event_handler('init', 'system', __NAMESPACE__ . '\\init');
 
 function init() {
+    spl_autoload_register(function ($class) {
+        if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
+            return false;
+        }
+        $file = __DIR__ . '/lib/' . strtr($class, '_\\', '//') . '.php';
+        return is_file($file) ? ((require $file) || true) : false;
+    });
+
     elgg_register_plugin_hook_handler('ufcoe:default_access', 'after', __NAMESPACE__ . '\\input_access_handler');
 
     // add default case
@@ -21,11 +29,8 @@ function init() {
  * @return int
  */
 function input_access_handler($hook, $type, $returnvalue, $params) {
-    require_once __DIR__ . '/lib/UFCOE/AccessLevelContext.php';
-    require_once __DIR__ . '/lib/UFCOE/AccessCaseInterface.php';
-
     // context data to be considered for deciding the access level
-    $ctx = new \UFCOE\AccessLevelContext($returnvalue, $params);
+    $ctx = new LevelContext($returnvalue, $params);
 
     // allow plugins to add their own AccessCases to be considered
     $params['context'] = $ctx;
@@ -34,7 +39,7 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
     // check the list of cases, each may change the access level and choose to make their
     // decision final
     foreach ($cases as $case) {
-        /* @var \UFCOE\AccessCaseInterface $case */
+        /* @var CaseInterface $case */
         $returnvalue = $case->alterAccessLevel($returnvalue, $ctx);
         if ($case->isFinal()) {
             break;
@@ -54,8 +59,6 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
  * @return array
  */
 function alter_access_handler($hook, $type, $returnvalue, $params) {
-    require_once __DIR__ . '/lib/UFCOE/AccessCase/Default.php';
-
-    $returnvalue[] = new \UFCOE\AccessCase_Default();
+    $returnvalue[] = new Case_Default();
     return $returnvalue;
 }
