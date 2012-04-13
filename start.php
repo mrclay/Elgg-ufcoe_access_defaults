@@ -6,11 +6,10 @@ elgg_register_event_handler('init', 'system', __NAMESPACE__ . '\\init');
 
 function init() {
     spl_autoload_register(function ($class) {
-        if (0 !== strpos($class, __NAMESPACE__ . '\\')) {
-            return false;
+        if (0 === strpos($class, __NAMESPACE__ . '\\')) {
+            $file = __DIR__ . '/lib/' . strtr($class, '_\\', '//') . '.php';
+            is_file($file) && (require $file);
         }
-        $file = __DIR__ . '/lib/' . strtr($class, '_\\', '//') . '.php';
-        return is_file($file) ? ((require $file) || true) : false;
     });
 
     elgg_register_plugin_hook_handler(shortname() . ':set_default', 'after',
