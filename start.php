@@ -13,10 +13,20 @@ function init() {
         return is_file($file) ? ((require $file) || true) : false;
     });
 
-    elgg_register_plugin_hook_handler('ufcoe:default_access', 'after', __NAMESPACE__ . '\\input_access_handler');
+    elgg_register_plugin_hook_handler(shortname() . ':set_default', 'after',
+        __NAMESPACE__ . '\\input_access_handler');
 
     // add default case
-    elgg_register_plugin_hook_handler('ufcoe:alter_access', 'before', __NAMESPACE__ . '\\alter_access_handler');
+    elgg_register_plugin_hook_handler(shortname() . ':alter', 'before',
+        __NAMESPACE__ . '\\alter_access_handler');
+}
+
+/**
+ * Get the shortname of this plugin
+ * @return string
+ */
+function shortname() {
+    return basename(__DIR__);
 }
 
 /**
@@ -34,7 +44,7 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
 
     // allow plugins to add their own AccessCases to be considered
     $params['context'] = $ctx;
-    $cases = elgg_trigger_plugin_hook('ufcoe:alter_access', 'before', $params, array());
+    $cases = elgg_trigger_plugin_hook(shortname() . ':alter', 'before', $params, array());
 
     // check the list of cases, each may change the access level and choose to make their
     // decision final

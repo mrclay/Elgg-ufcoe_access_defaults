@@ -20,7 +20,8 @@ $default_level = get_default_access();
 $params = array(
     'input_vars' => $vars,
 );
-$default_level = elgg_trigger_plugin_hook('ufcoe:default_access', 'after', $params, $default_level);
+$plugid = UFCOE\AccessDefaults\shortname();
+$default_level = elgg_trigger_plugin_hook("$plugid:set_default", 'after', $params, $default_level);
 
 $defaults = array(
 	'disabled' => false,

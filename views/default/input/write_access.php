@@ -18,7 +18,8 @@ $params = array(
     'input_vars' => $vars,
     'is_write_access' => true,
 );
-$default_level = elgg_trigger_plugin_hook('ufcoe:default_access', 'after', $params, $default_level);
+$plugid = UFCOE\AccessDefaults\shortname();
+$default_level = elgg_trigger_plugin_hook("$plugid:set_default", 'after', $params, $default_level);
 
 $defaults = array(
 	'class' => 'elgg-input-access',
