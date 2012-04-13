@@ -2,7 +2,7 @@
 
 namespace UFCOE\AccessDefaults;
 
-interface CaseInterface {
+interface ModifierInterface {
     /**
      * If the context suggests a different access level, return it instead of the given level
      *
@@ -10,7 +10,7 @@ interface CaseInterface {
      * @param LevelContext $ctx
      * @return int
      */
-    public function alterAccessLevel($level, LevelContext $ctx);
+    public function modifyAccessLevel($level, LevelContext $ctx);
 
     /**
      * Use the access level given by this case; do not try other cases

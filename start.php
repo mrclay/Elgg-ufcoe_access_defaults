@@ -43,14 +43,14 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
 
     // allow plugins to add their own AccessCases to be considered
     $params['context'] = $ctx;
-    $cases = elgg_trigger_plugin_hook(shortname() . ':alter', 'before', $params, array());
+    $modifiers = elgg_trigger_plugin_hook(shortname() . ':alter', 'before', $params, array());
 
     // check the list of cases, each may change the access level and choose to make their
     // decision final
-    foreach ($cases as $case) {
-        /* @var CaseInterface $case */
-        $returnvalue = $case->alterAccessLevel($returnvalue, $ctx);
-        if ($case->isFinal()) {
+    foreach ($modifiers as $modifier) {
+        /* @var ModifierInterface $modifier */
+        $returnvalue = $modifier->modifyAccessLevel($returnvalue, $ctx);
+        if ($modifier->isFinal()) {
             break;
         }
     }
@@ -59,7 +59,7 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
 }
 
 /**
- * Add default case for this plugin
+ * Add default modifier for this plugin
  *
  * @param string $hook
  * @param string $type
@@ -68,6 +68,6 @@ function input_access_handler($hook, $type, $returnvalue, $params) {
  * @return array
  */
 function alter_access_handler($hook, $type, $returnvalue, $params) {
-    $returnvalue[] = new Case_Default();
+    $returnvalue[] = new Modifier_Default();
     return $returnvalue;
 }

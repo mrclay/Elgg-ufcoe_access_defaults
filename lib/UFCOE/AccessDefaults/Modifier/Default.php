@@ -6,14 +6,14 @@ namespace UFCOE\AccessDefaults;
  * Implements default access levels specified here:
  * http://community.education.ufl.edu/community/pg/pages/view/32409/
  */
-class Case_Default implements CaseInterface
+class Modifier_Default implements ModifierInterface
 {
     public function isFinal()
     {
         return false;
     }
 
-    public function alterAccessLevel($level, LevelContext $ctx)
+    public function modifyAccessLevel($level, LevelContext $ctx)
     {
 
         if ($ctx->inGroup) {
