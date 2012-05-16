@@ -78,7 +78,7 @@ function get_modifiers(array $params) {
 }
 
 /**
- * Add default modifier for this plugin
+ * Add default & issue4525 modifiers for this plugin
  *
  * @param string $hook
  * @param string $type
@@ -88,6 +88,7 @@ function get_modifiers(array $params) {
  */
 function alter_access_handler($hook, $type, $returnvalue, $params) {
     $returnvalue[] = new Modifier_Default();
+	$returnvalue[] = new Modifier_Issue4525();
     return $returnvalue;
 }
 

@@ -3,7 +3,9 @@
 Provides the following features:
 
 * API for forcing particular access levels on new content
-* Includes a default strategy for influencing access levels (can be removed by other plugins)
+* Includes two modifiers by default (can be removed by other plugins)
+* Modifier "Issue4525" removes public/logged_in access levels for items in closed groups, since [they don't work](http://trac.elgg.org/ticket/4525).
+* Modifier "Default" implements this strategy: removes friends and friend collections from options within groups; removes public/logged_in options for write access; within groups, the default access becomes the group; write access for user content outside groups defaults to the user (private).
 
 ## Design
 
