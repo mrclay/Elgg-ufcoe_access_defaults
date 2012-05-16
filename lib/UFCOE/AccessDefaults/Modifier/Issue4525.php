@@ -16,7 +16,6 @@ class Modifier_Issue4525 implements ModifierInterface
 
 	public function modifyAccessLevel($level, LevelContext $ctx)
 	{
-
 		return $level;
 	}
 
